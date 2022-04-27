@@ -16,7 +16,7 @@ router.post('/register',(req,res) =>{
             return res.render('../views/hbs/register.hbs',{message:'Mật khẩu nhập lại không chính xác'});
         passwordHash = hashing.hashpassword(password)
         db.query('INSERT INTO user SET?',{email:email, passwordHash:passwordHash});
-        return res.render('register',{message:'Bạn đã đăng kí thành công hãy đăng nhập'});
+        return res.render('../views/hbs/register.hbs',{message:'Bạn đã đăng kí thành công hãy đăng nhập'});
     })
 });
 
@@ -48,4 +48,4 @@ router.post('/login', (req,res) => {
     console.log('done!');
 })
 
-module.exports=router;
+module.exports = router;

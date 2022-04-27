@@ -92,10 +92,20 @@ router.get('/user',(req,res)=>
                 const getHTMLBlog = async (ob) =>
                 {   
                     const authorEmail = await getAuthorEmail(ob.authorId);
-                    return `<button class="accordion"> ${ob.title} - ${authorEmail} </button>
-                    <div class="panel">
-                    <p> ${ob.content} </p>
-                    </div>`
+                    return `
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h4 class="card-title"> ${ob.title} - ${authorEmail} </h4>
+                            <div class="card-subtitle text-muted mb-2">
+                                ${ob.createdAt.toISOString().replace('T', ' ').substr(0, 19)}
+                            </div>
+                            <div class="card-text mb-2"> 
+                                ${ob.summary}
+                            </div>
+                            <a href="../blog/${ob.titleURL}" class="btn btn-primary"> Read More </a>
+                        </div>
+                    </div>
+                    `
                 }
                 const getAllHTMLBlog = async (data) => 
                 {
