@@ -103,7 +103,7 @@ nav ul li:hover{
     color: black;
 }
 
-.time 
+.time, .reply
 {
     color: grey;
     font-size: small;

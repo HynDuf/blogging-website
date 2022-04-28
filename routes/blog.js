@@ -2,6 +2,7 @@ const express = require('express');
 const { verify } = require('jsonwebtoken');
 const router = express.Router();
 const db = require('../database/database');
+const dateTime = require('node-datetime');
 const marked = require('marked')
 const renderer = new marked.Renderer();
 renderer.heading = (text, level) => `<h${level}>${text}</h${level}>`;
@@ -24,8 +25,21 @@ const getUserData = (id) =>
         });
     })
 }
+const getPostData = async (url) => 
+{
+    return new Promise((resolve, reject) => 
+    {
+        db.query('SELECT * FROM post WHERE titleUrl = ?', [url], (err, data) => {
+            if (err)
+            {
+                reject(err)
+            }
+            resolve(data[0])
+        });
+    })
+}
 
-const getAllComments = (postId) => 
+const getAllComments = async (postId) => 
 {
     return new Promise((resolve, reject) => 
     {
@@ -82,13 +96,13 @@ const dfsComment = async (id, commentList, comments, height) =>
                 <div class="username"> ${userName} - ${userEmail} </div>
                 <div class="time"> ${comments[id].createdAt.toISOString().replace('T', ' ').substr(0, 19)} </div>
                 <div class="user-comment"> ${comments[id].content} </div>
+                <div class="reply"> <a href="javascript:void(0)" onclick="reply(this)"> REPLY </a> </div>
                 
             </div>
     </div>
     `
     for (var i in commentList[id])
     {
-        console.log(i)
         html += await dfsComment(comments[commentList[id][i]].id, commentList, comments, height + 1);
     }
     return html;
@@ -98,7 +112,7 @@ router.get('/:titleURL', (req, res) =>
 {
     const tokenKey = req.session.tokenKey;
     let nav_bar = nav_bar_html.oth;
-    if(tokenKey)
+    if (tokenKey)
     {
         var isAdmin = verify(tokenKey,'secret').isAdmin;
         if (isAdmin) 
@@ -113,19 +127,40 @@ router.get('/:titleURL', (req, res) =>
             return res.status(404).render('../views/hbs/admin_write.hbs',{message : 'Blog với tiêu đề này không tồn tại'})
         }
         
-        const authorEmail = await getUserData(result[0].authorId).email;
-
+        const user = await getUserData(result[0].authorId);
         const commentSection = await buildCommentSection(result[0].id);
         
         return res.render('../views/ejs/blog.ejs', {
             nav_bar: nav_bar,
             title: result[0].title,
             content: DOMPurify.sanitize(marked.parse(result[0].content)),
-            authorEmail: authorEmail,
+            authorEmail: user.email,
             createdAt: result[0].createdAt.toISOString().replace('T', ' ').substr(0, 19),
-            commentSection: commentSection
+            commentSection: commentSection,
+            postUrl: titleURL
         })
     })
 })
 
+router.post('/:postUrl/comment', async (req, res) => 
+{
+    const {commentContent} = req.body;
+    const {postUrl} = req.params;
+    const postData = await getPostData(postUrl);
+    const tokenKey = req.session.tokenKey;
+    if (tokenKey)
+    {
+        var userId = verify(tokenKey,'secret').id;
+        var dt = dateTime.create().format('Y-m-d H:M:S');
+        db.query('INSERT INTO post_comment SET ?', {postId:postData.id, userId:userId, content:commentContent, createdAt:dt}, (error, result) => 
+        {
+            if (error)
+            {
+                console.log(error);
+            }
+            return res.redirect(`/blog/${postUrl}`);
+        })
+    } else 
+        res.redirect('/login');
+})
 module.exports=router;

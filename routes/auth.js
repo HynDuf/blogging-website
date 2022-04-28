@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const { default: axios } = require('axios');
 
 router.post('/register',(req,res) =>{
-    const {email,password,passwordcomfirm} = req.body;
+    const {email, password, passwordcomfirm} = req.body;
     db.query('SELECT email FROM user WHERE email = ?',[email],async (error,result)=>{
         if(error) console.log(error);
         if(result.length > 0) 
