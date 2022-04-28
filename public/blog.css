@@ -92,3 +92,24 @@ nav ul li a{
 nav ul li:hover{
     background-color: #68395900;
 }
+.comment-section
+{
+    margin-top: 100px;
+}
+.username
+{
+    font-weight: bold;
+    font-size: larger;
+    color: black;
+}
+
+.time 
+{
+    color: grey;
+    font-size: small;
+}
+
+.user-comment
+{
+    color: #000;
+}

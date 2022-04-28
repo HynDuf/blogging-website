@@ -15,7 +15,7 @@ router.post('/register',(req,res) =>{
         if (password !== passwordcomfirm) 
             return res.render('../views/hbs/register.hbs',{message:'Mật khẩu nhập lại không chính xác'});
         passwordHash = hashing.hashpassword(password)
-        db.query('INSERT INTO user SET?',{email:email, passwordHash:passwordHash});
+        db.query('INSERT INTO user SET?', {email:email, passwordHash:passwordHash});
         return res.render('../views/hbs/register.hbs',{message:'Bạn đã đăng kí thành công hãy đăng nhập'});
     })
 });
@@ -34,7 +34,7 @@ router.post('/login', (req,res) => {
             return res.render('../views/hbs/login.hbs',{message:"Sai mật khẩu"});
         }
         
-        if(result[0].isBan ==='lock')
+        if(result[0].isBan === 1)
         {
             return res.render('../views/hbs/login.hbs',{message:"Tài khoản của bạn đã bị khóa!"});
         }
