@@ -10,11 +10,11 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/blog.css">
     <div class="replyRow" style="display:none; margin-top:10px">
-        <div class="col-md-12">
-            <textarea class="form-control" id="replyComment" placeholder="Add Reply" cols="30" rows="2"></textarea>
-            <button style="float:right; margin-top:7px" class="btn-secondary btn" onclick="$('.replyRow').hide();"> Close </button>
-            <button style="float:right; margin-top:7px; margin-right:7px" class="btn-primary btn" id="addReply"> Add Reply </button>
-        </div>
+            <div class="col-md-12">
+                <textarea class="form-control"type="commentContent" id="commentContent" name="commentContent" placeholder="Add Reply" cols="30" rows="2"></textarea>
+                <button style="float:right; margin-top:7px; margin-bottom:7px" class="btn-secondary btn" onclick="$('.replyRow').hide();"> Close </button>
+                <button type="submit" style="float:right; margin-top:7px; margin-right:7px; margin-bottom:7px" class="btn-primary btn" id="addReply"> Add Reply </button>
+            </div>
     </div>
     <script>
         function reply(caller)
@@ -42,14 +42,14 @@
 
     <div class="comments-section">
         <h2 style="margin-left:30px"> Comments </h2>
-        <form method="POST" action="<%= postUrl %>/comment">
-            <div class="commentRow" style="margin:30px">
+        <div class="commentRow" style="margin:30px">
+            <form method="POST" action="<%= postUrl %>/comment">
                 <div class="col-md-12">
-                    <textarea class="form-control" type="commentContent" id="commentContent" name="commentContent" cols="30" rows="2"></textarea>
+                    <textarea class="form-control" type="commentContent" id="commentContent" name="commentContent" placeholder="Add Comment" cols="30" rows="2"></textarea>
                     <button type="submit" style="float:right; margin-top:10px" class="btn-primary btn" id="addComment"> Add Comment </button>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
         <br> <br>
         <%- commentSection %>
     </div>

@@ -51,7 +51,7 @@ const getAllComments = async (postId) =>
     })
 }
 
-const buildCommentSection = async (postId) => 
+const buildCommentSection = async (postId, postUrl) => 
 {
     const commentsRaw = await getAllComments(postId);
     const commentList = {}
@@ -71,12 +71,12 @@ const buildCommentSection = async (postId) =>
     html = "";
     for (var id in rootComments)
     {
-        html += await dfsComment(rootComments[id], commentList, comments, 0);
+        html += await dfsComment(rootComments[id], commentList, comments, 0, postUrl);
     }
     return html;
 }
 
-const dfsComment = async (id, commentList, comments, height) => 
+const dfsComment = async (id, commentList, comments, height, postUrl) => 
 {
     const userData = await getUserData(comments[id].userId);
     var userName;
@@ -91,7 +91,8 @@ const dfsComment = async (id, commentList, comments, height) =>
     const userEmail = userData.email;
     html = 
     `
-    <div class="card mt-2" style="margin-left:${30 + height * 50}px; margin-right:30px">
+    <div class="card mt-2" style="margin-left:${30 + height * 50}px; margin-right:30px; margin-bottom:10px">
+        <form method="POST" action="${postUrl}/comment/${comments[id].id}">
             <div class="card-body">
                 <div class="username"> ${userName} - ${userEmail} </div>
                 <div class="time"> ${comments[id].createdAt.toISOString().replace('T', ' ').substr(0, 19)} </div>
@@ -99,11 +100,12 @@ const dfsComment = async (id, commentList, comments, height) =>
                 <div class="reply"> <a href="javascript:void(0)" onclick="reply(this)"> REPLY </a> </div>
                 
             </div>
+        </form>
     </div>
     `
     for (var i in commentList[id])
     {
-        html += await dfsComment(comments[commentList[id][i]].id, commentList, comments, height + 1);
+        html += await dfsComment(comments[commentList[id][i]].id, commentList, comments, height + 1, postUrl);
     }
     return html;
 }
@@ -128,7 +130,7 @@ router.get('/:titleURL', (req, res) =>
         }
         
         const user = await getUserData(result[0].authorId);
-        const commentSection = await buildCommentSection(result[0].id);
+        const commentSection = await buildCommentSection(result[0].id, titleURL);
         
         return res.render('../views/ejs/blog.ejs', {
             nav_bar: nav_bar,
@@ -151,8 +153,35 @@ router.post('/:postUrl/comment', async (req, res) =>
     if (tokenKey)
     {
         var userId = verify(tokenKey,'secret').id;
-        var dt = dateTime.create().format('Y-m-d H:M:S');
+        var dt = dateTime.create();
+        dt.offsetInHours(7);
+        dt = dt.format('Y-m-d H:M:S');
         db.query('INSERT INTO post_comment SET ?', {postId:postData.id, userId:userId, content:commentContent, createdAt:dt}, (error, result) => 
+        {
+            if (error)
+            {
+                console.log(error);
+            }
+            return res.redirect(`/blog/${postUrl}`);
+        })
+    } else 
+        res.redirect('/login');
+})
+
+router.post('/:postUrl/comment/:parentId', async (req, res) => 
+{
+    const {commentContent} = req.body;
+    const {postUrl, parentId} = req.params;
+    const postData = await getPostData(postUrl);
+    const tokenKey = req.session.tokenKey;
+    console.log('Parent ID:', req.params)
+    if (tokenKey)
+    {
+        var userId = verify(tokenKey,'secret').id;
+        var dt = dateTime.create();
+        dt.offsetInHours(7);
+        dt = dt.format('Y-m-d H:M:S');
+        db.query('INSERT INTO post_comment SET ?', {postId:postData.id, userId:userId, parentId:parentId, content:commentContent, createdAt:dt}, (error, result) => 
         {
             if (error)
             {
