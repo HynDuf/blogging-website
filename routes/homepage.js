@@ -2,45 +2,47 @@ const express = require('express');
 const { verify } = require('jsonwebtoken');
 const router = express.Router();
 const db = require('../database/database');
-const render_homepage = require('../fs/user_homepage');
-const render_homepage_admin = require('../fs/admin_homepage');
-
-router.get('/admin', (req,res)=>
+const getUserData = (id) => 
+{
+    return new Promise((resolve, reject) => 
+    {
+        db.query('SELECT * FROM user WHERE id = ?', [id], (err, data) => {
+            if (err)
+            {
+                reject(err)
+            }
+            resolve(data[0])
+        });
+    })
+}
+router.get('/admin', async (req,res) =>
 {
     const tokenKey = req.session.tokenKey;
     if (tokenKey)
     {
-        const {email,isAdmin} = verify(tokenKey,'secret');
+        const isAdmin = verify(tokenKey,'secret').isAdmin;
+        const userId = verify(tokenKey,'secret').id;
+        const userData = await getUserData(userId);
+        const userName = userData.userName;
         if(isAdmin)
         {
-            db.query('SELECT * FROM post', async (err,result)=>{
-                const getAuthorEmail = (authorId) => 
-                {
-                    return new Promise((resolve, reject) => 
-                    {
-                        db.query('SELECT email FROM user WHERE id = ?', [authorId], (err, data) => {
-                            if (err)
-                            {
-                                reject(err)
-                            }
-                            resolve(data[0].email)
-                        });
-                    })
-                }
+            db.query('SELECT * FROM post', async (err,result) => {
                 const getHTMLBlog = async (ob) =>
                 {   
-                    const authorEmail = await getAuthorEmail(ob.authorId);
+                    const userDataTem = await getUserData(ob.authorId);
+                    const authorEmail = userDataTem.email;
                     return `
                     <div class="card mt-4">
                         <div class="card-body">
-                            <h4 class="card-title"> ${ob.title} - ${authorEmail} </h4>
+                            <h4 class="card-title"> ${ob.title} - <a href="/users/${ob.authorId}">${authorEmail}</a> </h4>
                             <div class="card-subtitle text-muted mb-2">
                                 ${ob.createdAt.toISOString().replace('T', ' ').substr(0, 19)}
                             </div>
                             <div class="card-text mb-2"> 
                                 ${ob.summary}
                             </div>
-                            <a href="../blog/${ob.titleURL}" class="btn btn-primary"> Read More </a>
+                            <a href="/blog/${ob.titleURL}" class="btn btn-primary"> Read More </a>
+                            <a href="/blog/delete/${ob.titleURL}" class="btn btn-danger"> Delete </a>
                         </div>
                     </div>
                     `
@@ -57,7 +59,11 @@ router.get('/admin', (req,res)=>
                 }
                 getAllHTMLBlog(result).then(data => 
                 {
-                    return res.send(render_homepage_admin.left + data + render_homepage_admin.right);
+                    return res.render('../views/ejs/admin_homepage.ejs', {
+                        userId: userId,
+                        userName: userName,
+                        listOfBlogs: data
+                    })
                 })
             })
         }
@@ -66,43 +72,45 @@ router.get('/admin', (req,res)=>
     else res.redirect('/login');
 });
 
-router.get('/user',(req,res)=>
+router.get('/user', async (req,res) =>
 {
     const tokenKey = req.session.tokenKey;
     if(tokenKey)
     {
-        const {email,isAdmin} = verify(tokenKey,'secret');
+        const isAdmin = verify(tokenKey,'secret').isAdmin;
+        const userId = verify(tokenKey,'secret').id;
+        const userData = await getUserData(userId);
+        const userName = userData.userName;
         if(!isAdmin)
         {
            
             db.query('SELECT * FROM post', async (err, result)=>{
-                const getAuthorEmail = (authorId) => 
-                {
-                    return new Promise((resolve, reject) => 
-                    {
-                        db.query('SELECT email FROM user WHERE id = ?', [authorId], (err, data) => {
-                            if (err)
-                            {
-                                reject(err)
-                            }
-                            resolve(data[0].email)
-                        });
-                    })
-                }
                 const getHTMLBlog = async (ob) =>
                 {   
-                    const authorEmail = await getAuthorEmail(ob.authorId);
+                    const userDataTem = await getUserData(ob.authorId);
+                    const authorEmail = userDataTem.email;
+                    if (userId == ob.authorId)
+                        deleteButtonHTML = 
+                        `
+                        <a href="/blog/delete/${ob.titleURL}" class="btn btn-danger"> Delete </a>
+                        `;
+                    else 
+                        deleteButtonHTML = ``;
                     return `
                     <div class="card mt-4">
                         <div class="card-body">
-                            <h4 class="card-title"> ${ob.title} - ${authorEmail} </h4>
+                            <h4 class="card-title"> ${ob.title} - <a href="/users/${ob.authorId}">${authorEmail}</a> </h4> 
                             <div class="card-subtitle text-muted mb-2">
                                 ${ob.createdAt.toISOString().replace('T', ' ').substr(0, 19)}
                             </div>
                             <div class="card-text mb-2"> 
                                 ${ob.summary}
                             </div>
-                            <a href="../blog/${ob.titleURL}" class="btn btn-primary"> Read More </a>
+                            <a href="/blog/${ob.titleURL}" class="btn btn-primary"> Read More </a>
+                    `
+                    + deleteButtonHTML
+                    +
+                    `
                         </div>
                     </div>
                     `
@@ -118,9 +126,13 @@ router.get('/user',(req,res)=>
                     return html
                 }
                 getAllHTMLBlog(result).then(data => 
-                {
-                    return res.send(render_homepage.left + data + render_homepage.right);
-                })
+                    {
+                        return res.render('../views/ejs/user_homepage.ejs', {
+                            userId: userId,
+                            userName: userName,
+                            listOfBlogs: data
+                        })
+                    })
             })
         }
         else res.redirect('/login');

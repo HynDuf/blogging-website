@@ -25,19 +25,25 @@
             </div>
             <div class="card-body">
                 <form action="/auth/register" method="POST">
+
+                    <div class="form-group">
+                        <label for="userName">Username</label>
+                        <input type="userName" class="form-control" id="userName" name="userName" maxlength="50" required>
+                    </div>
+
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email">
+                        <input type="email" class="form-control" id="email" name="email" maxlength="100" required>
                     </div>
 
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" class="form-control" id="password" name="password">
+                        <input type="password" class="form-control" id="password" name="password" required>
                     </div>
 
                      <div class="form-group">
                         <label for="password">Password Comfirm</label>
-                        <input type="password" class="form-control" id="passwordcomfirm" name="passwordcomfirm">
+                        <input type="password" class="form-control" id="passwordcomfirm" name="passwordcomfirm" required>
                     </div>
 
                     <button type="submit" class="btn btn-primary" style="margin-top:10px">Register</button>

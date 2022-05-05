@@ -2,12 +2,11 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database/database');
 const hashing = require('../database/hashing');
-const passport = require('passport');
+const dateTime = require('node-datetime');
 const jwt = require('jsonwebtoken');
-const { default: axios } = require('axios');
 
 router.post('/register',(req,res) =>{
-    const {email, password, passwordcomfirm} = req.body;
+    const {userName, email, password, passwordcomfirm} = req.body;
     db.query('SELECT email FROM user WHERE email = ?',[email],async (error,result)=>{
         if(error) console.log(error);
         if(result.length > 0) 
@@ -15,7 +14,10 @@ router.post('/register',(req,res) =>{
         if (password !== passwordcomfirm) 
             return res.render('../views/hbs/register.hbs',{message:'Mật khẩu nhập lại không chính xác'});
         passwordHash = hashing.hashpassword(password)
-        db.query('INSERT INTO user SET?', {email:email, passwordHash:passwordHash});
+        var dt = dateTime.create();
+        dt.offsetInHours(7);
+        dt = dt.format('Y-m-d H:M:S');
+        db.query('INSERT INTO user SET ?', {userName:userName, email:email, passwordHash:passwordHash, registeredAt:dt});
         return res.render('../views/hbs/register.hbs',{message:'Bạn đã đăng kí thành công hãy đăng nhập'});
     })
 });

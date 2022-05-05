@@ -79,22 +79,14 @@ const buildCommentSection = async (postId, postUrl) =>
 const dfsComment = async (id, commentList, comments, height, postUrl) => 
 {
     const userData = await getUserData(comments[id].userId);
-    var userName;
-    if (!userData.firstName && !userData.lastName) 
-        userName = "Noname";
-    else if (!userData.firstName)
-        userName = userData.lastName;
-    else if (!userData.lastName)
-        userName = userData.firstName;
-    else 
-        userName = userData.firstName + ' ' + userData.lastName;
+    const userName = userData.userName;
     const userEmail = userData.email;
     html = 
     `
     <div class="card mt-2" style="margin-left:${30 + height * 50}px; margin-right:30px; margin-bottom:10px">
         <form method="POST" action="${postUrl}/comment/${comments[id].id}">
             <div class="card-body">
-                <div class="username"> ${userName} - ${userEmail} </div>
+                <div class="username"> ${userName} - <a href="/users/${comments[id].userId}"> ${userEmail} </a> </div>
                 <div class="time"> ${comments[id].createdAt.toISOString().replace('T', ' ').substr(0, 19)} </div>
                 <div class="user-comment"> ${comments[id].content} </div>
                 <div class="reply"> <a href="javascript:void(0)" onclick="reply(this)"> REPLY </a> </div>
@@ -110,23 +102,31 @@ const dfsComment = async (id, commentList, comments, height, postUrl) =>
     return html;
 }
 
-router.get('/:titleURL', (req, res) => 
+router.get('/:titleURL', async (req, res) => 
 {
     const tokenKey = req.session.tokenKey;
     let nav_bar = nav_bar_html.oth;
+    let userName = "";
     if (tokenKey)
     {
-        var isAdmin = verify(tokenKey,'secret').isAdmin;
+        const isAdmin = verify(tokenKey,'secret').isAdmin;
+        const userId = verify(tokenKey,'secret').id;
+        const userData = await getUserData(userId);
         if (isAdmin) 
             nav_bar = nav_bar_html.admin;
         else 
             nav_bar = nav_bar_html.user;
+        userName =
+        `
+        <i class="fa-solid fa-user"></i>
+        <a href="/users/${userId}" class="usersection"> ${userData.userName}</a>
+        `
     }
     const {titleURL} = req.params;
     db.query("SELECT * FROM post WHERE titleURL = ?", [titleURL], async (error, result) => {
         if(result.length <= 0)
         {
-            return res.status(404).render('../views/hbs/admin_write.hbs',{message : 'Blog với tiêu đề này không tồn tại'})
+            return res.status(404).redirect('/homepage')
         }
         
         const user = await getUserData(result[0].authorId);
@@ -134,8 +134,10 @@ router.get('/:titleURL', (req, res) =>
         
         return res.render('../views/ejs/blog.ejs', {
             nav_bar: nav_bar,
+            userName: userName,
             title: result[0].title,
             content: DOMPurify.sanitize(marked.parse(result[0].content)),
+            authorId: result[0].authorId,
             authorEmail: user.email,
             createdAt: result[0].createdAt.toISOString().replace('T', ' ').substr(0, 19),
             commentSection: commentSection,
@@ -174,10 +176,9 @@ router.post('/:postUrl/comment/:parentId', async (req, res) =>
     const {postUrl, parentId} = req.params;
     const postData = await getPostData(postUrl);
     const tokenKey = req.session.tokenKey;
-    console.log('Parent ID:', req.params)
     if (tokenKey)
     {
-        var userId = verify(tokenKey,'secret').id;
+        const userId = verify(tokenKey,'secret').id;
         var dt = dateTime.create();
         dt.offsetInHours(7);
         dt = dt.format('Y-m-d H:M:S');
@@ -189,6 +190,28 @@ router.post('/:postUrl/comment/:parentId', async (req, res) =>
             }
             return res.redirect(`/blog/${postUrl}`);
         })
+    } else 
+        res.redirect('/login');
+})
+
+router.get('/delete/:postUrl', async (req, res) => 
+{
+    const tokenKey = req.session.tokenKey;
+    if (tokenKey)
+    {
+        const isAdmin = verify(tokenKey,'secret').isAdmin;
+        const userId = verify(tokenKey,'secret').id;
+        const {postUrl} = req.params;
+        const postData = await getPostData(postUrl);
+        if (!isAdmin && userId != postData.id)
+            res.redirect('/homepage/user');
+        db.query('DELETE FROM post WHERE titleURL = ?', [postUrl], (err,result)=>{
+            if(err) console.log(err);
+        });
+        if (isAdmin)
+            res.redirect('/homepage/admin');
+        else 
+            res.redirect('/homepage/user'); 
     } else 
         res.redirect('/login');
 })
