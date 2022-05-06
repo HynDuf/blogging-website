@@ -73,3 +73,18 @@ a:hover {
     width: 45%;
     overflow-wrap: break-word;
 }
+
+.search-bar-left {
+    width: 30%;
+    margin: 10px; 
+    margin-left: 70px;
+    margin-right: 30px;
+}
+
+.search-bar-right {
+    margin-top: 20px;
+    margin-left: 80px;
+    width: 60%;
+    overflow-wrap: break-word;
+    height: 40px;
+}

@@ -124,7 +124,7 @@ router.get('/:titleURL', async (req, res) =>
     }
     const {titleURL} = req.params;
     db.query("SELECT * FROM post WHERE titleURL = ?", [titleURL], async (error, result) => {
-        if(result.length <= 0)
+        if (result.length <= 0)
         {
             return res.status(404).redirect('/homepage')
         }
@@ -136,6 +136,7 @@ router.get('/:titleURL', async (req, res) =>
             nav_bar: nav_bar,
             userName: userName,
             title: result[0].title,
+            summary: result[0].summary,
             content: DOMPurify.sanitize(marked.parse(result[0].content)),
             authorId: result[0].authorId,
             authorEmail: user.email,
@@ -204,14 +205,14 @@ router.post('/delete/:postUrl', async (req, res) =>
         const {postUrl} = req.params;
         const postData = await getPostData(postUrl);
         if (!isAdmin && userId != postData.authorId)
-            res.redirect('/homepage/user');
+            res.redirect('/homepage/');
         db.query('DELETE FROM post WHERE titleURL = ?', [postUrl], (err,result)=>{
             if(err) console.log(err);
         });
         if (isAdmin)
-            res.redirect('/homepage/admin');
+            res.redirect('/homepage/');
         else 
-            res.redirect('/homepage/user'); 
+            res.redirect('/homepage/'); 
     } else 
         res.redirect('/login');
 })
@@ -225,7 +226,7 @@ router.post('/update/:postUrl', async (req, res) =>
         const {postUrl} = req.params;
         const postData = await getPostData(postUrl);
         if (!isAdmin && userId != postData.authorId)
-            res.redirect('/homepage/user');
+            res.redirect('/homepage/');
         const {summary, content} = req.body;
         db.query(`UPDATE post SET ? WHERE titleURL = '${postUrl}'`, {summary:summary, content:content}, (err,result) => {
             if(err) console.log(err);
@@ -244,7 +245,7 @@ router.get('/edit/:postUrl', async (req, res) =>
         const {postUrl} = req.params;
         const postData = await getPostData(postUrl);
         if (!isAdmin && userId != postData.authorId)
-            res.redirect('/homepage/user');
+            res.redirect('/homepage/');
         const userData = await getUserData(userId);
         return res.render('../views/ejs/blog_edit.ejs', 
         {
@@ -258,4 +259,5 @@ router.get('/edit/:postUrl', async (req, res) =>
     } else 
         res.redirect('/login');
 })
+
 module.exports = router;

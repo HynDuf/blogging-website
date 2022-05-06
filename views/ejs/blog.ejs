@@ -39,6 +39,9 @@
         <h1 class="title"> <%= title %> </h1>
         <p class="published"><span>Published At - <%= createdAt %> </span></p>
         <p class="published"><span>Author - <a href="/users/<%= authorId %>"> <%= authorEmail %> </a>  </span></p>
+        <div class="summary">
+            <h5> Summary: </h5> <%- summary %>
+        </div>
         <div class="article">
             <%- content %>
         </div>

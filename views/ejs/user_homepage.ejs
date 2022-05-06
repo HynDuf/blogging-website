@@ -14,16 +14,17 @@
     <nav>
         <h4>Home Page</h4>
         <ul>
-        <li><a href="/homepage/user">Home</a></li>
+        <li><a href="/homepage/">Home</a></li>
             <li><a href="/user/write">Write</a></li>
-            <li><a href="/user">Profile</a></li>
             <li><a href="/logout">Log out</a></li>
         </ul>
         <i class="fa-solid fa-user"></i>
         <a href="/users/<%= userId %>" class="usersection"> <%= userName %></a>
     </nav>
-
-    <h2 style="margin:20px">Các bài viết</h2>
+    <div class="row">
+        <h2 class="search-bar-left" style="margin:20px">Các bài viết</h2>
+        <input class="search-bar-right" type="text" placeholder="Search..">
+    </div>
     <%-listOfBlogs%>
   
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>

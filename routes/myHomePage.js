@@ -9,8 +9,8 @@ router.get('/myHomePage', (req,res) =>
     if (tokenKey)
     {
         const {email,isAdmin} = verify(tokenKey,'secret');
-        if (!isAdmin) res.redirect('/homepage/user');
-        else         res.redirect('/homepage/admin');
+        if (!isAdmin) res.redirect('/homepage/');
+        else         res.redirect('/homepage/');
     }
     else res.redirect('/login');
 });

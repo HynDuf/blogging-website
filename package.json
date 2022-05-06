@@ -31,6 +31,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "redirect": "^0.2.0",
-    "showdown": "^2.0.3"
+    "showdown": "^2.0.3",
+    "slugify": "^1.6.5"
   }
 }

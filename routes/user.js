@@ -3,7 +3,7 @@ const { verify } = require('jsonwebtoken');
 const router = express.Router();
 const db = require('../database/database');
 const dateTime = require('node-datetime');
-const {titleNormalize} = require('../database/title_normalize')
+const slugify = require('slugify')
 const getUserData = (id) => 
 {
     return new Promise((resolve, reject) => 
@@ -49,7 +49,12 @@ router.post('/saveblog', async (req,res) => {
         if(!isAdmin)
         {
             const {title, summary, content} = req.body;
-            titleURL = titleNormalize(title);
+            titleURL = slugify(title, 
+            {
+                locale: 'vi',
+                lower: true,
+                strict: true
+            });
             db.query("SELECT * FROM post WHERE titleURL = ?", [titleURL], (error, result) => {
                 if(result.length > 0)
                 {
@@ -70,7 +75,7 @@ router.post('/saveblog', async (req,res) => {
                         console.log('Fuck offf')
                         console.log(error)
                     }
-                    return res.redirect('/homepage/user');
+                    return res.redirect('/homepage/');
                 })
             })
         }else res.redirect('/login');
