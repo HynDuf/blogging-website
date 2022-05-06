@@ -16,12 +16,26 @@ const getUserData = (id) =>
         });
     })
 }
+const countNumberBlogs = (id) => 
+{
+    return new Promise((resolve, reject) => 
+    {
+        db.query('SELECT * FROM post WHERE authorId = ?', [id], (err, data) => {
+            if (err)
+            {
+                reject(err)
+            }
+            resolve(data.length)
+        });
+    })
+}
 router.get('/:userId', async (req, res) => 
 {
     const tokenKey = req.session.tokenKey;
     let userSection = "";
     let nav_bar = nav_bar_html.oth;
     let userOriginId = -1;
+    let isAdminBool = 0;
     if (tokenKey) 
     {
         const isAdmin = verify(tokenKey,'secret').isAdmin;
@@ -29,7 +43,10 @@ router.get('/:userId', async (req, res) =>
         userOriginId = id;
         const userData = await getUserData(id);
         if (isAdmin) 
+        {
             nav_bar = nav_bar_html.admin;
+            isAdminBool = 1;
+        }
         else 
             nav_bar = nav_bar_html.user;
         userSection =
@@ -41,20 +58,33 @@ router.get('/:userId', async (req, res) =>
     const {userId} = req.params;
     const userDataTem = await getUserData(userId);
     const authorEmail = userDataTem.email;
+    const userProfile = (userDataTem.profile ? userDataTem.profile : '')
+    const userNumBlogs = await countNumberBlogs(userId);
     userDataSection = `
-    <i class="fa-solid fa-user fa-5x" style="margin: 30px; margin-bottom: 10px;"></i>
-    <h3 style="margin-left: 25px"> ${userDataTem.userName} </h3> 
+    <div class="row">
+        
+        <div class="column left">
+            <i class="fa-solid fa-user fa-5x"></i>
+        </div>
+        <div class="column right">
+            <h4> ${userDataTem.userName} </h4> 
+            <h5> ${userDataTem.email} </h5> 
+            <h6> Giới thiệu: ${userProfile}</h6>
+            <h6> Số lượng blog đã viết: ${userNumBlogs}</h6>
+        </div>
+    </div>
     `
     db.query("SELECT * FROM post WHERE authorId = ?", [userId], (error,result) => {
         const getHTMLBlog = async (ob) =>
         {   
-            if (userOriginId == userId)
-                deleteButtonHTML = 
+            if (isAdminBool || userOriginId == userId)
+                extraButtonHTML = 
                 `
+                <a href="/blog/edit/${ob.titleURL}" class="btn btn-warning"> Edit </a>
                 <a href="/blog/delete/${ob.titleURL}" class="btn btn-danger"> Delete </a>
                 `;
             else 
-                deleteButtonHTML = ``;
+                extraButtonHTML = ``;
             return `
             <div class="card mt-4">
                 <div class="card-body">
@@ -67,7 +97,7 @@ router.get('/:userId', async (req, res) =>
                     </div>
                     <a href="/blog/${ob.titleURL}" class="btn btn-primary"> Read More </a>
             `
-            + deleteButtonHTML
+            + extraButtonHTML
             +
             `    
                 </div>
@@ -87,6 +117,7 @@ router.get('/:userId', async (req, res) =>
         getAllHTMLBlog(result).then(data => 
         {
             return res.render('../views/ejs/users_profile.ejs', {
+                userName: userDataTem.userName,
                 nav_bar: nav_bar,
                 userSection: userSection,
                 userDataSection: userDataSection,

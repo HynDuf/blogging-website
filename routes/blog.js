@@ -194,7 +194,7 @@ router.post('/:postUrl/comment/:parentId', async (req, res) =>
         res.redirect('/login');
 })
 
-router.get('/delete/:postUrl', async (req, res) => 
+router.post('/delete/:postUrl', async (req, res) => 
 {
     const tokenKey = req.session.tokenKey;
     if (tokenKey)
@@ -203,7 +203,7 @@ router.get('/delete/:postUrl', async (req, res) =>
         const userId = verify(tokenKey,'secret').id;
         const {postUrl} = req.params;
         const postData = await getPostData(postUrl);
-        if (!isAdmin && userId != postData.id)
+        if (!isAdmin && userId != postData.authorId)
             res.redirect('/homepage/user');
         db.query('DELETE FROM post WHERE titleURL = ?', [postUrl], (err,result)=>{
             if(err) console.log(err);
@@ -215,4 +215,47 @@ router.get('/delete/:postUrl', async (req, res) =>
     } else 
         res.redirect('/login');
 })
-module.exports=router;
+router.post('/update/:postUrl', async (req, res) => 
+{
+    const tokenKey = req.session.tokenKey;
+    if (tokenKey)
+    {
+        const isAdmin = verify(tokenKey,'secret').isAdmin;
+        const userId = verify(tokenKey,'secret').id;
+        const {postUrl} = req.params;
+        const postData = await getPostData(postUrl);
+        if (!isAdmin && userId != postData.authorId)
+            res.redirect('/homepage/user');
+        const {summary, content} = req.body;
+        db.query(`UPDATE post SET ? WHERE titleURL = '${postUrl}'`, {summary:summary, content:content}, (err,result) => {
+            if(err) console.log(err);
+        });
+        res.redirect(`/blog/${postUrl}`);
+    } else 
+        res.redirect('/login');
+})
+router.get('/edit/:postUrl', async (req, res) => 
+{
+    const tokenKey = req.session.tokenKey;
+    if (tokenKey)
+    {
+        const isAdmin = verify(tokenKey,'secret').isAdmin;
+        const userId = verify(tokenKey,'secret').id;
+        const {postUrl} = req.params;
+        const postData = await getPostData(postUrl);
+        if (!isAdmin && userId != postData.authorId)
+            res.redirect('/homepage/user');
+        const userData = await getUserData(userId);
+        return res.render('../views/ejs/blog_edit.ejs', 
+        {
+            userId: userId,
+            userName: userData.userName,
+            postUrl: postUrl,
+            postTitle: postData.title,
+            oriSummary: postData.summary,
+            oriContent: postData.content
+        })
+    } else 
+        res.redirect('/login');
+})
+module.exports = router;

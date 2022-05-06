@@ -42,6 +42,7 @@ router.get('/admin', async (req,res) =>
                                 ${ob.summary}
                             </div>
                             <a href="/blog/${ob.titleURL}" class="btn btn-primary"> Read More </a>
+                            <a href="/blog/edit/${ob.titleURL}" class="btn btn-warning"> Edit </a>
                             <a href="/blog/delete/${ob.titleURL}" class="btn btn-danger"> Delete </a>
                         </div>
                     </div>
@@ -90,12 +91,13 @@ router.get('/user', async (req,res) =>
                     const userDataTem = await getUserData(ob.authorId);
                     const authorEmail = userDataTem.email;
                     if (userId == ob.authorId)
-                        deleteButtonHTML = 
+                        extraButtonHTML = 
                         `
+                        <a href="/blog/edit/${ob.titleURL}" class="btn btn-warning"> Edit </a>
                         <a href="/blog/delete/${ob.titleURL}" class="btn btn-danger"> Delete </a>
                         `;
                     else 
-                        deleteButtonHTML = ``;
+                        extraButtonHTML = ``;
                     return `
                     <div class="card mt-4">
                         <div class="card-body">
@@ -108,7 +110,7 @@ router.get('/user', async (req,res) =>
                             </div>
                             <a href="/blog/${ob.titleURL}" class="btn btn-primary"> Read More </a>
                     `
-                    + deleteButtonHTML
+                    + extraButtonHTML
                     +
                     `
                         </div>

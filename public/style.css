@@ -54,3 +54,22 @@ a:hover {
     margin-top:25px; 
     font-weight: 600;
 }
+
+.column {
+    float: left;
+}
+
+.left {
+    width: 5%;
+    margin: 10px; 
+    margin-bottom: 10px;
+    margin-left: 70px;
+    margin-right: 30px;
+}
+
+.right {
+    margin-top: 20px;
+    margin-left: 20px;
+    width: 45%;
+    overflow-wrap: break-word;
+}

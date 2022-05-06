@@ -74,57 +74,6 @@ router.post('/saveblog', async (req,res) => {
     } else res.redirect('/login');
 });
 
-// router.get('/profile', async (req,res) => {
-//     const tokenKey = req.session.tokenKey;
-//     if (tokenKey)
-//     {
-//         const isAdmin = verify(tokenKey,'secret').isAdmin;
-//         const userId = verify(tokenKey,'secret').id;
-//         if (isAdmin)
-//         {
-//             res.redirect(`/users/${userId}`)
-//         } else res.redirect('/login');
-//     } else res.redirect('/login');
-// })
-
-// router.get('/deleteblog', (req,res) => {
-//     const tokenKey = req.session.tokenKey;
-//     if(tokenKey)
-//     {
-//         var isAdmin = verify(tokenKey,'secret').isAdmin;
-//         if (isAdmin)
-//         {
-//             return res.render('../views/hbs/admin_deleteblog.hbs');
-//         } else res.redirect('/login');
-//     } else res.redirect('/login');
-// })
-
-router.post('/resaveblog', (req,res) => {
-    const tokenKey = req.session.tokenKey;
-    if (tokenKey)
-    {
-        var isAdmin = verify(tokenKey,'secret').isAdmin;
-        var email = verify(tokenKey,'secret').email;
-        if (isAdmin)
-        {
-            var {title} = req.body;
-            titleURL = titleNormalize(title)
-            db.query('SELECT * FROM post WHERE titleURL = ?', [titleURL], (err,result)=>{
-                if (result.length <= 0)
-                {
-                    return res.render('../views/hbs/admin_deleteblog.hbs',{message : 'Không tồn tại bài viết có tiêu đề như thế'});
-                }
-
-                db.query('DELETE FROM post WHERE titleURL = ?', [titleURL], (err,result)=>{
-                    if(err) console.log(err);
-                });
-                return res.render('../views/hbs/admin_deleteblog.hbs',{message : 'Bạn đã xóa bài viết thành công!'});
-            })
-
-        } else res.redirect('/login');
-    } else res.redirect('/login');
-})
-
 router.post('/lock', (req,res) => {
     const tokenKey = req.session.tokenKey;
     if (tokenKey)
