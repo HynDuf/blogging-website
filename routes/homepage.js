@@ -70,7 +70,7 @@ router.get('/', async (req,res) =>
             }
             getAllHTMLBlog(result).then(data => 
             {
-                return res.render('../views/ejs/user_homepage.ejs', {
+                return res.render('../views/ejs/homepage.ejs', {
                     userId: userId,
                     userName: userName,
                     listOfBlogs: data
@@ -81,7 +81,7 @@ router.get('/', async (req,res) =>
     else res.redirect('/login');
 });
 
-router.get('/search/:searchString', async (req,res) =>
+router.get('/search', async (req,res) =>
 {
     const tokenKey = req.session.tokenKey;
     if (tokenKey)
@@ -90,10 +90,12 @@ router.get('/search/:searchString', async (req,res) =>
         const userId = verify(tokenKey,'secret').id;
         const userData = await getUserData(userId);
         const userName = userData.userName;
-        const {searchString} = req.params;
-        const wordList = searchString.split(' ');
-        var searchStringQuery = wordList.join('|')
-        db.query(`SELECT * FROM post WHERE title REGEXP '${searchStringQuery}' OR titleURL REGEXP '${searchStringQuery}'`, async (err, result) => {
+        const searchString = req.query.searchString;
+        const wordList = searchString.trim().split(/[ ,]+/); 
+        var searchStringQuery = wordList.join('|');
+        db.query(`SELECT * FROM post WHERE title REGEXP '${searchStringQuery}' 
+                                        OR summary REGEXP '${searchStringQuery}' 
+                                        OR titleURL REGEXP '${searchStringQuery}'`, async (err, result) => {
             if (err)
             {
                 console.log(err)
@@ -142,7 +144,7 @@ router.get('/search/:searchString', async (req,res) =>
             }
             getAllHTMLBlog(result).then(data => 
             {
-                return res.render('../views/ejs/user_homepage.ejs', {
+                return res.render('../views/ejs/homepage.ejs', {
                     userId: userId,
                     userName: userName,
                     listOfBlogs: data
