@@ -7,6 +7,14 @@ exports.admin = `
 </ul>
 `
 
+exports.oth =  `
+<ul>
+    <li><a href="/homepage">Home</a></li>
+    <li><a href="/login">Login</a></li>
+    <li><a href="/register">Register</a></li>
+</ul>
+`
+
 exports.user = `
 <ul>
     <li><a href="/homepage">Home</a></li>

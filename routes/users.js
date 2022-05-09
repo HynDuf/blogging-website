@@ -33,7 +33,7 @@ router.get('/:userId', async (req, res) =>
 {
     const tokenKey = req.session.tokenKey;
     let userSection = "";
-    let nav_bar = nav_bar_html.user;
+    let nav_bar = nav_bar_html.oth;
     let userOriginId = -1;
     let isAdminBool = 0;
     if (tokenKey) 
@@ -82,7 +82,7 @@ router.get('/:userId', async (req, res) =>
                 extraButtonHTML = 
                 `
                 <a href="/blog/edit/${ob.titleURL}" class="btn btn-warning"> Edit </a>
-                <a href="/blog/delete/${ob.titleURL}" class="btn btn-danger"> Delete </a>
+                <button class="btn btn-danger" onclick="confirmDelete('/blog/delete/${ob.titleURL}')"> Delete </button>
                 `;
             else 
                 extraButtonHTML = ``;
@@ -191,7 +191,7 @@ router.get('/:userId/search', async (req, res) =>
                 extraButtonHTML = 
                 `
                 <a href="/blog/edit/${ob.titleURL}" class="btn btn-warning"> Edit </a>
-                <a href="/blog/delete/${ob.titleURL}" class="btn btn-danger"> Delete </a>
+                <button class="btn btn-danger" onclick="confirmDelete('/blog/delete/${ob.titleURL}')"> Delete </button>
                 `;
             else 
                 extraButtonHTML = ``;

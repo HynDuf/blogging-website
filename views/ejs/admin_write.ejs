@@ -21,7 +21,7 @@
         <i class="fa-solid fa-user"></i>
         <a href="/users/<%= userId %>" class="usersection"> <%= userName %></a>
     </nav>
-
+    
     <div class="container mt-4">
         <div class="card">
             <div class="card-header">
@@ -29,31 +29,31 @@
             </div>
         </div>
 
+        <% if (typeof message != 'undefined') { %>
+            <h4 class="alert alert-danger mt-4"><%= message %></h4>
+        <% } %>
+        
         <div class="card-body">
-                <form action="/admin/saveblog" method="POST">
-                    <div class="mb-3">
-                        <label for="Title" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="title" name="title" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="Summary" class="form-label">Summary</label>
-                        <input type="text" class="form-control" id="summary" name="summary" required>
-                    </div>
-
+            <form action="/admin/saveblog" method="POST">
+                <div class="mb-3">
+                    <label for="Title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" value="<%= lastTitle%>" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="Summary" class="form-label">Summary</label>
+                    <input type="text" class="form-control" id="summary" name="summary" value="<%= lastSummary %>" required>
+                </div>
+                
                     
                     <div class="mb-3">
                         <label for="Content" class="form-label">Content (Markdown format) </label>
-                        <textarea class="form-control" id="content" name ="content"  rows="20" required></textarea>
+                        <textarea class="form-control" id="content" name ="content"  rows="20" required><%= lastContent%></textarea>
                     </div>
                     
                     <button type="submit" class="btn btn-primary">Upload</button>
                 </form>
         </div>
-
-        <% if (typeof message != 'undefined') { %>
-            <h4 class="alert alert-danger mt-4"><%= message %></h4>
-        <% } %>
     </div>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>

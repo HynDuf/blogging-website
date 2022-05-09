@@ -29,6 +29,9 @@ router.get('/write', async (req,res) => {
         {
             res.render('../views/ejs/admin_write.ejs', 
             {
+                lastTitle: "",
+                lastSummary: "",
+                lastContent: "",
                 userId: userId,
                 userName: userName
             });
@@ -58,6 +61,9 @@ router.post('/saveblog', async (req,res) => {
                 {
                     return res.render('../views/ejs/admin_write.ejs', 
                     {
+                        lastTitle: title,
+                        lastSummary: summary,
+                        lastContent: content,
                         userId: userId,
                         userName: userName,
                         message : 'Tiêu đề này đã được thêm vào trước đây mới bạn đặt lại tiêu đề'

@@ -31,7 +31,7 @@ router.get('/', async (req,res) =>
             nav_bar = nav_bar_file.admin;
         else 
             nav_bar = nav_bar_file.user;
-        db.query('SELECT * FROM post', async (err, result) => {
+        db.query('SELECT * FROM post ORDER BY createdAt DESC', async (err, result) => {
             const getHTMLBlog = async (ob) =>
             {   
                 const userDataTem = await getUserData(ob.authorId);
@@ -41,7 +41,7 @@ router.get('/', async (req,res) =>
                     extraButtonHTML = 
                     `
                     <a href="/blog/edit/${ob.titleURL}" class="btn btn-warning"> Edit </a>
-                    <a href="/blog/delete/${ob.titleURL}" class="btn btn-danger"> Delete </a>
+                    <button class="btn btn-danger" onclick="confirmDelete('/blog/delete/${ob.titleURL}')"> Delete </button>
                     `;
                 else 
                     extraButtonHTML = ``;
@@ -122,7 +122,7 @@ router.get('/search', async (req,res) =>
                     extraButtonHTML = 
                     `
                     <a href="/blog/edit/${ob.titleURL}" class="btn btn-warning"> Edit </a>
-                    <a href="/blog/delete/${ob.titleURL}" class="btn btn-danger"> Delete </a>
+                    <button class="btn btn-danger" onclick="confirmDelete('/blog/delete/${ob.titleURL}')"> Delete </button>
                     `;
                 else 
                     extraButtonHTML = ``;

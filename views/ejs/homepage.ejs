@@ -11,6 +11,14 @@
     <title>Home Page</title>
 </head>
 <body>
+    <script>
+        function confirmDelete(url) {
+            if (confirm("Bạn có chắc chắn muốn xóa blog này không?")) 
+            {
+                window.location.href = url;
+            } 
+        }
+    </script>
     <nav>
         <h4>Home Page</h4>
         <%- nav_bar %>
