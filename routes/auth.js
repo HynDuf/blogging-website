@@ -13,7 +13,7 @@ router.post('/register',(req,res) =>{
             return res.render('../views/hbs/register.hbs',{message:'Email đã được sử dụng'});
         if (password !== passwordcomfirm) 
             return res.render('../views/hbs/register.hbs',{message:'Mật khẩu nhập lại không chính xác'});
-        passwordHash = hashing.hashpassword(password)
+        const passwordHash = hashing.hashpassword(password)
         var dt = dateTime.create();
         dt.offsetInHours(7);
         dt = dt.format('Y-m-d H:M:S');
@@ -36,7 +36,7 @@ router.post('/login', (req,res) => {
             return res.render('../views/hbs/login.hbs',{message:"Sai mật khẩu"});
         }
         
-        if(result[0].isBan === 1)
+        if(result[0].isBan == 1)
         {
             return res.render('../views/hbs/login.hbs',{message:"Tài khoản của bạn đã bị khóa!"});
         }
