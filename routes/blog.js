@@ -195,7 +195,7 @@ router.post('/:postUrl/comment/:parentId', async (req, res) =>
         res.redirect('/login');
 })
 
-router.post('/delete/:postUrl', async (req, res) => 
+router.get('/delete/:postUrl', async (req, res) => 
 {
     const tokenKey = req.session.tokenKey;
     if (tokenKey)
