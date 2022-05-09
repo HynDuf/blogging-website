@@ -60,7 +60,7 @@ const buildCommentSection = async (postId, postUrl) =>
         comments[commentsRaw[i].id] = commentsRaw[i];
     for (let i = 0; i < commentsRaw.length; i++)
         commentList[commentsRaw[i].id] = []
-    rootComments = [];
+    let rootComments = [];
     for (let i = 0; i < commentsRaw.length; i++)
     {
         if (commentsRaw[i].parentId)
@@ -68,7 +68,7 @@ const buildCommentSection = async (postId, postUrl) =>
         else 
             rootComments.push(commentsRaw[i].id);
     }
-    html = "";
+    let html = "";
     for (var id in rootComments)
     {
         html += await dfsComment(rootComments[id], commentList, comments, 0, postUrl);
@@ -81,7 +81,7 @@ const dfsComment = async (id, commentList, comments, height, postUrl) =>
     const userData = await getUserData(comments[id].userId);
     const userName = userData.userName;
     const userEmail = userData.email;
-    html = 
+    let html = 
     `
     <div class="card mt-2" style="margin-left:${30 + height * 50}px; margin-right:30px; margin-bottom:10px">
         <form method="POST" action="${postUrl}/comment/${comments[id].id}">

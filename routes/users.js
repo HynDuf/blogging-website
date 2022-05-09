@@ -33,7 +33,7 @@ router.get('/:userId', async (req, res) =>
 {
     const tokenKey = req.session.tokenKey;
     let userSection = "";
-    let nav_bar = nav_bar_html.oth;
+    let nav_bar = nav_bar_html.user;
     let userOriginId = -1;
     let isAdminBool = 0;
     if (tokenKey) 
@@ -60,7 +60,7 @@ router.get('/:userId', async (req, res) =>
     const authorEmail = userDataTem.email;
     const userProfile = (userDataTem.profile ? userDataTem.profile : '')
     const userNumBlogs = await countNumberBlogs(userId);
-    userDataSection = `
+    const userDataSection = `
     <div class="row">
         
         <div class="column left">
@@ -76,7 +76,8 @@ router.get('/:userId', async (req, res) =>
     `
     db.query("SELECT * FROM post WHERE authorId = ?", [userId], (error,result) => {
         const getHTMLBlog = async (ob) =>
-        {   
+        {  
+            let extraButtonHTML = "";
             if (isAdminBool || userOriginId == userId)
                 extraButtonHTML = 
                 `
@@ -159,7 +160,7 @@ router.get('/:userId/search', async (req, res) =>
     const authorEmail = userDataTem.email;
     const userProfile = (userDataTem.profile ? userDataTem.profile : '')
     const userNumBlogs = await countNumberBlogs(userId);
-    userDataSection = `
+    const userDataSection = `
     <div class="row">
         
         <div class="column left">
@@ -184,7 +185,8 @@ router.get('/:userId/search', async (req, res) =>
                                         OR titleURL REGEXP '${searchStringQuery}'
                                         )`, async (err, result) => {
         const getHTMLBlog = async (ob) =>
-        {   
+        {  
+            let extraButtonHTML = "";
             if (isAdminBool || userOriginId == userId)
                 extraButtonHTML = 
                 `

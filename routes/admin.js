@@ -47,7 +47,7 @@ router.post('/saveblog', async (req,res) => {
         if(isAdmin)
         {
             const {title, summary, content} = req.body;
-            titleURL = slugify(title, 
+            const titleURL = slugify(title, 
             {
                 locale: 'vi',
                 lower: true,

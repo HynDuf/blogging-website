@@ -2,6 +2,7 @@ const express = require('express');
 const { verify } = require('jsonwebtoken');
 const router = express.Router();
 const db = require('../database/database');
+const nav_bar_file = require('../fs/nav');
 const getUserData = (id) => 
 {
     return new Promise((resolve, reject) => 
@@ -25,12 +26,17 @@ router.get('/', async (req,res) =>
         const userId = verify(tokenKey,'secret').id;
         const userData = await getUserData(userId);
         const userName = userData.userName;
-           
+        let nav_bar = "";
+        if (isAdmin)
+            nav_bar = nav_bar_file.admin;
+        else 
+            nav_bar = nav_bar_file.user;
         db.query('SELECT * FROM post', async (err, result) => {
             const getHTMLBlog = async (ob) =>
             {   
                 const userDataTem = await getUserData(ob.authorId);
                 const authorEmail = userDataTem.email;
+                let extraButtonHTML = "";
                 if (isAdmin || userId == ob.authorId)
                     extraButtonHTML = 
                     `
@@ -71,6 +77,7 @@ router.get('/', async (req,res) =>
             getAllHTMLBlog(result).then(data => 
             {
                 return res.render('../views/ejs/homepage.ejs', {
+                    nav_bar: nav_bar,
                     userId: userId,
                     userName: userName,
                     listOfBlogs: data
@@ -93,6 +100,11 @@ router.get('/search', async (req,res) =>
         const searchString = req.query.searchString;
         const wordList = searchString.trim().split(/[ ,]+/); 
         var searchStringQuery = wordList.join('|');
+        let nav_bar = "";
+        if (isAdmin)
+            nav_bar = nav_bar_file.admin;
+        else 
+            nav_bar = nav_bar_file.user;
         db.query(`SELECT * FROM post WHERE title REGEXP '${searchStringQuery}' 
                                         OR summary REGEXP '${searchStringQuery}' 
                                         OR titleURL REGEXP '${searchStringQuery}'`, async (err, result) => {
@@ -105,6 +117,7 @@ router.get('/search', async (req,res) =>
             {   
                 const userDataTem = await getUserData(ob.authorId);
                 const authorEmail = userDataTem.email;
+                let extraButtonHTML = "";
                 if (isAdmin || userId == ob.authorId)
                     extraButtonHTML = 
                     `
@@ -145,6 +158,7 @@ router.get('/search', async (req,res) =>
             getAllHTMLBlog(result).then(data => 
             {
                 return res.render('../views/ejs/homepage.ejs', {
+                    nav_bar: nav_bar,
                     userId: userId,
                     userName: userName,
                     listOfBlogs: data

@@ -13,11 +13,7 @@
 <body>
     <nav>
         <h4>Home Page</h4>
-        <ul>
-        <li><a href="/homepage/">Home</a></li>
-            <li><a href="/user/write">Write</a></li>
-            <li><a href="/logout">Log out</a></li>
-        </ul>
+        <%- nav_bar %>
         <i class="fa-solid fa-user"></i>
         <a href="/users/<%= userId %>" class="usersection"> <%= userName %></a>
     </nav>
