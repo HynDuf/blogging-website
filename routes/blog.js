@@ -11,7 +11,7 @@ const createDOMPurify = require('dompurify');
 const { JSDOM } = require('jsdom');
 const DOMPurify = createDOMPurify(new JSDOM('').window);
 const nav_bar_html = require('../fs/nav')
-
+const slugify = require('slugify')
 const getUserData = (id) => 
 {
     return new Promise((resolve, reject) => 
@@ -101,6 +101,73 @@ const dfsComment = async (id, commentList, comments, height, postUrl) =>
     }
     return html;
 }
+
+router.get('/write', async (req,res) => {
+    console.log('Something \n');
+    const tokenKey = req.session.tokenKey;
+    if (tokenKey)
+    {
+        const isAdmin = verify(tokenKey,'secret').isAdmin;
+        let nav_bar = nav_bar_html.user;
+        if (isAdmin)
+            nav_bar = nav_bar_html.admin;
+        const userId = verify(tokenKey,'secret').id;
+        const userData = await getUserData(userId);
+        const userName = userData.userName;
+        res.render('../views/ejs/blog_write.ejs', 
+        {
+            nav_bar: nav_bar,
+            lastTitle: "",
+            lastSummary: "",
+            lastContent: "",
+            userId: userId,
+            userName: userName
+        });
+    } else res.redirect('/login');
+})
+
+router.post('/saveblog', async (req,res) => {
+    const tokenKey = req.session.tokenKey;
+    if (tokenKey)
+    {
+        const isAdmin = verify(tokenKey,'secret').isAdmin;
+        const userId = verify(tokenKey,'secret').id;
+        const userData = await getUserData(userId);
+        const userName = userData.userName;
+        const {title, summary, content} = req.body;
+        const titleURL = slugify(title, 
+        {
+            locale: 'vi',
+            lower: true,
+            strict: true
+        });
+        db.query("SELECT * FROM post WHERE titleURL = ?", [titleURL], (error, result) => {
+            if(result.length > 0)
+            {
+                return res.render('../views/ejs/blog_write.ejs', 
+                {
+                    lastTitle: title,
+                    lastSummary: summary,
+                    lastContent: content,
+                    userId: userId,
+                    userName: userName,
+                    message : 'Tiêu đề này đã được thêm vào trước đây mới bạn đặt lại tiêu đề'
+                })
+            }
+            var dt = dateTime.create();
+            dt.offsetInHours(7);
+            dt = dt.format('Y-m-d H:M:S');
+            db.query("INSERT INTO post SET ?", {authorID:userId, title:title, titleURL:titleURL, summary:summary, content:content, createdAt:dt},(error,result)=>
+            {
+                if (error)
+                {
+                    console.log(error)
+                }
+                return res.redirect('/homepage/');
+            })
+        })
+    } else res.redirect('/login');
+});
 
 router.get('/:titleURL', async (req, res) => 
 {
@@ -195,6 +262,7 @@ router.post('/:postUrl/comment/:parentId', async (req, res) =>
         res.redirect('/login');
 })
 
+
 router.get('/delete/:postUrl', async (req, res) => 
 {
     const tokenKey = req.session.tokenKey;
@@ -209,10 +277,11 @@ router.get('/delete/:postUrl', async (req, res) =>
         db.query('DELETE FROM post WHERE titleURL = ?', [postUrl], (err,result)=>{
             if(err) console.log(err);
         });
-        if (isAdmin)
-            res.redirect('/homepage/');
-        else 
+        const type = req.query.type;
+        if (type == 0)
             res.redirect('/homepage/'); 
+        else 
+            res.redirect(`/users/${type}`);
     } else 
         res.redirect('/login');
 })

@@ -16,7 +16,6 @@ app.use(session({
 app.use('/',require('./routes/pages'));
 app.use('/',require('./routes/myHomePage'));
 app.use('/homepage',require('./routes/homepage'));
-app.use('/user',require('./routes/user'));
 app.use('/admin',require('./routes/admin'));
 app.use('/blog',require('./routes/blog'));
 app.use('/users',require('./routes/users'));

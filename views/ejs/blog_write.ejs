@@ -12,12 +12,7 @@
 <body>
     <nav>
         <h4>Write blog</h4>
-        <ul>
-            <li><a href="/homepage/">Home</a></li>
-            <li><a href="/admin/write">Write</a></li>
-            <li><a href="/admin/manageuser">Manage user</a></li>
-            <li><a href="/logout">Log out</a></li>
-        </ul>
+        <%- nav_bar %> 
         <i class="fa-solid fa-user"></i>
         <a href="/users/<%= userId %>" class="usersection"> <%= userName %></a>
     </nav>
@@ -34,10 +29,10 @@
         <% } %>
         
         <div class="card-body">
-            <form action="/admin/saveblog" method="POST">
+            <form action="/blog/saveblog" method="POST">
                 <div class="mb-3">
                     <label for="Title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" value="<%= lastTitle%>" required>
+                    <input type="text" class="form-control" id="title" name="title" value="<%= lastTitle %>" required>
                 </div>
                 
                 <div class="mb-3">
@@ -46,12 +41,32 @@
                 </div>
                 
                     
-                    <div class="mb-3">
-                        <label for="Content" class="form-label">Content (Markdown format) </label>
-                        <textarea class="form-control" id="content" name ="content"  rows="20" required><%= lastContent%></textarea>
+                <div class="mb-3">
+                    <label for="Content" class="form-label">Content (Markdown format) </label>
+                    <textarea class="form-control" id="content" name ="content"  rows="20" required><%= lastContent %></textarea>
+                </div>
+                
+                Category
+                <div class="category-row">
+                    <div class="category-column"> 
+                        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+                        <label for="vehicle1"> I have a bike</label><br>
                     </div>
-                    
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <div class="category-column"> 
+                        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+                        <label for="vehicle1"> I have a bike</label><br>
+                    </div>
+                    <div class="category-column">
+                        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+                        <label for="vehicle1"> I have a bike</label><br>
+                    </div>
+                    <div class="category-column">
+                        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+                        <label for="vehicle1"> I have a bike</label><br>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+
                 </form>
         </div>
     </div>

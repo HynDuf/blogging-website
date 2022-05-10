@@ -82,7 +82,7 @@ router.get('/:userId', async (req, res) =>
                 extraButtonHTML = 
                 `
                 <a href="/blog/edit/${ob.titleURL}" class="btn btn-warning"> Edit </a>
-                <button class="btn btn-danger" onclick="confirmDelete('/blog/delete/${ob.titleURL}')"> Delete </button>
+                <button class="btn btn-danger" onclick="confirmDelete('/blog/delete/${ob.titleURL}', ${userId})"> Delete </button>
                 `;
             else 
                 extraButtonHTML = ``;
@@ -183,7 +183,8 @@ router.get('/:userId/search', async (req, res) =>
                                         title REGEXP '${searchStringQuery}' 
                                         OR summary REGEXP '${searchStringQuery}' 
                                         OR titleURL REGEXP '${searchStringQuery}'
-                                        )`, async (err, result) => {
+                                        )
+                                 ORDER BY createdAt DESC`, async (err, result) => {
         const getHTMLBlog = async (ob) =>
         {  
             let extraButtonHTML = "";

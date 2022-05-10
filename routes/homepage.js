@@ -107,7 +107,8 @@ router.get('/search', async (req,res) =>
             nav_bar = nav_bar_file.user;
         db.query(`SELECT * FROM post WHERE title REGEXP '${searchStringQuery}' 
                                         OR summary REGEXP '${searchStringQuery}' 
-                                        OR titleURL REGEXP '${searchStringQuery}'`, async (err, result) => {
+                                        OR titleURL REGEXP '${searchStringQuery}'
+                                     ORDER BY createdAt DESC`, async (err, result) => {
             if (err)
             {
                 console.log(err)

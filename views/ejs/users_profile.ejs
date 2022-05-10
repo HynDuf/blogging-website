@@ -12,10 +12,10 @@
 </head>
 <body>
     <script>
-        function confirmDelete(url) {
+        function confirmDelete(url, userId) {
             if (confirm("Bạn có chắc chắn muốn xóa blog này không?")) 
             {
-                window.location.href = url;
+                window.location.href = url + `?type=${userId}`;
             } 
         }
     </script>
