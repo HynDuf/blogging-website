@@ -96,7 +96,7 @@ router.get('/:userId', async (req, res) =>
                     <div class="card-text mb-2"> 
                         ${ob.summary}
                     </div>
-                    <a href="/blog/${ob.titleURL}" class="btn btn-primary"> Read More </a>
+                    <a href="/blog/view/${ob.titleURL}" class="btn btn-primary"> Read More </a>
             `
             + extraButtonHTML
             +
@@ -206,7 +206,7 @@ router.get('/:userId/search', async (req, res) =>
                     <div class="card-text mb-2"> 
                         ${ob.summary}
                     </div>
-                    <a href="/blog/${ob.titleURL}" class="btn btn-primary"> Read More </a>
+                    <a href="/blog/view/${ob.titleURL}" class="btn btn-primary"> Read More </a>
             `
             + extraButtonHTML
             +

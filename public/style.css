@@ -102,11 +102,12 @@ a:hover {
 {
     display: table;
     clear: both;
-
 }
+    
 .category-row
 {
     margin-top: 10px;
+    margin-bottom: 10px;
 }
 .category-column
 {

@@ -29,7 +29,7 @@
         <% } %>
         
         <div class="card-body">
-            <form action="/blog/saveblog" method="POST">
+            <form action="/blog/saveblog" method="POST" onsubmit="test()">
                 <div class="mb-3">
                     <label for="Title" class="form-label">Title</label>
                     <input type="text" class="form-control" id="title" name="title" value="<%= lastTitle %>" required>
@@ -49,25 +49,21 @@
                 Category
                 <div class="category-row">
                     <div class="category-column"> 
-                        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-                        <label for="vehicle1"> I have a bike</label><br>
+                        <%- category_column_1 %>
                     </div>
                     <div class="category-column"> 
-                        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-                        <label for="vehicle1"> I have a bike</label><br>
+                        <%- category_column_2 %>
                     </div>
                     <div class="category-column">
-                        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-                        <label for="vehicle1"> I have a bike</label><br>
+                        <%- category_column_3 %>
                     </div>
                     <div class="category-column">
-                        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-                        <label for="vehicle1"> I have a bike</label><br>
+                        <%- category_column_4 %>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="submit" class="btn btn-primary" onclick="test()">Upload</button>
 
-                </form>
+            </form>
         </div>
     </div>
 
