@@ -58,10 +58,11 @@ a:hover {
 .column {
     float: left;
 }
-/* .row
+.row :after
 {
-    float: right;
-} */
+    display: table;
+    clear: both;
+}
 .left {
     width: 5%;
     margin: 10px; 
@@ -81,10 +82,17 @@ a:hover {
     width: 30%;
     margin: 20px;   
 }
-
-.search-bar-right {
+.search-bar-mid 
+{
+    float: left;
+    width: 10%;
     margin-top: 20px;
-    margin-left: 150px;
+    height: 40px;
+}
+.search-bar-right {
+    float: left;
+    margin-top: 20px;
+    margin-left: 20px;
     width: 50%;
     overflow-wrap: break-word;
     height: 40px;

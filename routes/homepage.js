@@ -98,17 +98,45 @@ router.get('/search', async (req,res) =>
         const userData = await getUserData(userId);
         const userName = userData.userName;
         const searchString = req.query.searchString;
-        const wordList = searchString.trim().split(/[ ,]+/); 
-        var searchStringQuery = wordList.join('|');
+        const categoryId = req.query.categoryId;
+        const searchStringQuery = searchString.trim().split(/[ ,]+/).join('|');
         let nav_bar = "";
         if (isAdmin)
             nav_bar = nav_bar_file.admin;
         else 
             nav_bar = nav_bar_file.user;
-        db.query(`SELECT * FROM post WHERE title REGEXP '${searchStringQuery}' 
-                                        OR summary REGEXP '${searchStringQuery}' 
-                                        OR titleURL REGEXP '${searchStringQuery}'
-                                     ORDER BY createdAt DESC`, async (err, result) => {
+        var SQL_query = "";
+        if (categoryId == 0)
+        {
+            SQL_query = `SELECT * 
+                         FROM post
+                         WHERE
+                            (
+                            title REGEXP '${searchStringQuery}' 
+                            OR summary REGEXP '${searchStringQuery}' 
+                            OR titleURL REGEXP '${searchStringQuery}'
+                            )
+                         ORDER BY createdAt DESC`
+        } else 
+        {
+            SQL_query = `SELECT * 
+                         FROM 
+                         (
+                             SELECT p.*
+                             FROM post_category AS pc
+                             LEFT JOIN post AS p
+                             ON pc.postId = p.id
+                             WHERE pc.categoryId = ${categoryId}
+                         ) AS oth
+                         WHERE
+                            (
+                               oth.title REGEXP '${searchStringQuery}' 
+                            OR oth.summary REGEXP '${searchStringQuery}' 
+                            OR oth.titleURL REGEXP '${searchStringQuery}'
+                            )
+                         ORDER BY oth.createdAt DESC`
+        }
+        db.query(SQL_query, async (err, result) => {
             if (err)
             {
                 console.log(err)

@@ -27,8 +27,23 @@
     </nav>
     <form action="/homepage/search" method="get">
         <div class="row">
-            <h2 class="search-bar-left">Các bài viết</h2>
-            <input class="search-bar-right" type="text" name="searchString" placeholder="Search..">
+            <h2 class="column search-bar-left">Các bài viết</h2>
+            <select class="column search-bar-mid" name="categoryId" id="categoryId">
+                <option value="0" selected hidden>Category</option>
+                <option value="1">Food</option>
+                <option value="2">Travel</option>
+                <option value="3">Health and Fitness</option>
+                <option value="4">Lifestyle</option>
+                <option value="5">Fashion and Beauty</option>
+                <option value="6">Personal</option>
+                <option value="7">Sports</option>
+                <option value="8">Business</option>
+                <option value="9">News</option>
+                <option value="10">Book and Writing</option>
+                <option value="11">Others</option>
+                
+            </select>
+            <input class="column search-bar-right" type="text" name="searchString" placeholder="Search..">
             <button class="search-bar-button" type="submit">
                 <i class="fa fa-search"> </i>
             </button>

@@ -74,7 +74,7 @@ router.get('/:userId', async (req, res) =>
         </div>
     </div>
     `
-    db.query("SELECT * FROM post WHERE authorId = ?", [userId], (error,result) => {
+    db.query("SELECT * FROM post WHERE authorId = ? ORDER BY createdAt DESC", [userId], (error,result) => {
         const getHTMLBlog = async (ob) =>
         {  
             let extraButtonHTML = "";
@@ -175,16 +175,44 @@ router.get('/:userId/search', async (req, res) =>
     </div>
     `
     const searchString = req.query.searchString;
-    const wordList = searchString.trim().split(/[ ,]+/); 
-    var searchStringQuery = wordList.join('|');
-    db.query(`SELECT * FROM post WHERE authorId = ${userId}
-                                        AND 
-                                        (
-                                        title REGEXP '${searchStringQuery}' 
-                                        OR summary REGEXP '${searchStringQuery}' 
-                                        OR titleURL REGEXP '${searchStringQuery}'
-                                        )
-                                 ORDER BY createdAt DESC`, async (err, result) => {
+    const categoryId = req.query.categoryId;
+    const searchStringQuery = searchString.trim().split(/[ ,]+/).join('|');
+    var SQL_query = "";
+    if (categoryId == 0)
+    {
+        SQL_query = `SELECT * 
+                        FROM post
+                        WHERE
+                        authorId = ${userId} 
+                        AND
+                        (
+                        title REGEXP '${searchStringQuery}' 
+                        OR summary REGEXP '${searchStringQuery}' 
+                        OR titleURL REGEXP '${searchStringQuery}'
+                        )
+                        ORDER BY createdAt DESC`
+    } else 
+    {
+        SQL_query = `SELECT * 
+                        FROM 
+                        (
+                            SELECT p.*
+                            FROM post_category AS pc
+                            LEFT JOIN post AS p
+                            ON pc.postId = p.id
+                            WHERE pc.categoryId = ${categoryId}
+                        ) AS oth
+                     WHERE
+                     oth.authorId = ${userId} 
+                     AND
+                     (
+                        oth.title REGEXP '${searchStringQuery}' 
+                     OR oth.summary REGEXP '${searchStringQuery}' 
+                     OR oth.titleURL REGEXP '${searchStringQuery}'
+                     )
+                     ORDER BY oth.createdAt DESC`
+    }
+    db.query(SQL_query, async (err, result) => {
         const getHTMLBlog = async (ob) =>
         {  
             let extraButtonHTML = "";
