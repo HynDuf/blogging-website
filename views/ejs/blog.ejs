@@ -39,16 +39,19 @@
         <h1 class="title"> <%= title %> </h1>
         <p class="published"><span>Published At - <%= createdAt %> </span></p>
         <p class="published"><span>Author - <a href="/users/<%= authorId %>"> <%= authorEmail %> </a>  </span></p>
+        <div class="category">
+            <strong> Category: </strong> <%- category %>
+        </div>
         <div class="summary">
-            <h5> Summary: </h5> <%- summary %>
+            <strong> Summary: </strong> <%- summary %>
         </div>
         <div class="article">
-            <h5> Content: </h5> <%- content %>
+            <%- content %>
         </div>
     </div>
 
     <div class="comments-section">
-        <h2 style="margin-left:30px"> Comments </h2>
+        <h2 style="margin-left:30px"> Comments - <%= numComments %> </h2>
         <div class="commentRow" style="margin:30px">
             <form method="POST" action="<%= postUrl %>/comment">
                 <div class="col-md-12">

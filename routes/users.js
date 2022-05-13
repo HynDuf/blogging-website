@@ -29,6 +29,30 @@ const countNumberBlogs = (id) =>
         });
     })
 }
+const getCategoryOfPost = (id) =>
+{
+    return new Promise((resolve, reject) => 
+    {
+        db.query(
+        `
+            SELECT category.title
+            FROM category
+            WHERE EXISTS
+            (
+                SELECT post_category.postId
+                FROM post_category
+                WHERE post_category.postId = ${id} AND category.id = post_category.categoryId
+            )
+        `
+        , (err, data) => {
+            if (err)
+            {
+                reject(err)
+            }
+            resolve(data)
+        });
+    })
+}
 router.get('/:userId', async (req, res) => 
 {
     const tokenKey = req.session.tokenKey;
@@ -86,6 +110,10 @@ router.get('/:userId', async (req, res) =>
                 `;
             else 
                 extraButtonHTML = ``;
+            var categoryList = [];
+            const allCategories = await getCategoryOfPost(ob.id);
+            for (var i = 0; i < allCategories.length; i++) 
+                categoryList.push(allCategories[i].title)
             return `
             <div class="card mt-4">
                 <div class="card-body">
@@ -94,7 +122,10 @@ router.get('/:userId', async (req, res) =>
                         ${ob.createdAt.toISOString().replace('T', ' ').substr(0, 19)}
                     </div>
                     <div class="card-text mb-2"> 
-                        ${ob.summary}
+                            <strong> Summary: </strong> ${ob.summary}
+                        </div>
+                    <div class="card-text mb-2"> 
+                        <strong> Category: </strong> ${categoryList.join(', ')}
                     </div>
                     <a href="/blog/view/${ob.titleURL}" class="btn btn-primary"> Read More </a>
             `
@@ -181,20 +212,20 @@ router.get('/:userId/search', async (req, res) =>
     if (categoryId == 0)
     {
         SQL_query = `SELECT * 
-                        FROM post
-                        WHERE
-                        authorId = ${userId} 
-                        AND
-                        (
-                        title REGEXP '${searchStringQuery}' 
-                        OR summary REGEXP '${searchStringQuery}' 
-                        OR titleURL REGEXP '${searchStringQuery}'
-                        )
-                        ORDER BY createdAt DESC`
+                     FROM post
+                     WHERE
+                     authorId = ${userId} 
+                     AND
+                     (
+                     title REGEXP '${searchStringQuery}' 
+                     OR summary REGEXP '${searchStringQuery}' 
+                     OR titleURL REGEXP '${searchStringQuery}'
+                     )
+                     ORDER BY createdAt DESC`
     } else 
     {
         SQL_query = `SELECT * 
-                        FROM 
+                     FROM 
                         (
                             SELECT p.*
                             FROM post_category AS pc
@@ -224,6 +255,10 @@ router.get('/:userId/search', async (req, res) =>
                 `;
             else 
                 extraButtonHTML = ``;
+            var categoryList = [];
+            const allCategories = await getCategoryOfPost(ob.id);
+            for (var i = 0; i < allCategories.length; i++) 
+                categoryList.push(allCategories[i].title)
             return `
             <div class="card mt-4">
                 <div class="card-body">
@@ -232,7 +267,10 @@ router.get('/:userId/search', async (req, res) =>
                         ${ob.createdAt.toISOString().replace('T', ' ').substr(0, 19)}
                     </div>
                     <div class="card-text mb-2"> 
-                        ${ob.summary}
+                            <strong> Summary: </strong> ${ob.summary}
+                    </div>
+                    <div class="card-text mb-2"> 
+                        <strong> Category: </strong> ${categoryList.join(', ')}
                     </div>
                     <a href="/blog/view/${ob.titleURL}" class="btn btn-primary"> Read More </a>
             `

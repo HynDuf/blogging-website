@@ -27,12 +27,13 @@ nav ul li{
 
 }
 
-nav ul li a{
-     text-decoration: none;
+nav ul li a:hover{
+    text-decoration: none;
 }
 
 nav ul li:hover{
-    background-color: #68395900;
+    font-weight: bolder;
+    text-decoration: none; 
 }
 
 .fa-user
@@ -40,19 +41,23 @@ nav ul li:hover{
     margin-top: 30px;
     margin-right: 10px;
 }
+.usersection
+{
+    color:black; 
+    margin-top: 25px; 
+    font-weight: 600;
+}
+
+nav a:hover
+{
+    text-decoration: none;
+}
 a {
     color: #1E7EC8;
     text-decoration: none;
 }
 a:hover {
     text-decoration: underline; 
-}
-
-.usersection
-{
-    color:black; 
-    margin-top:25px; 
-    font-weight: 600;
 }
 
 .column {

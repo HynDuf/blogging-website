@@ -117,6 +117,46 @@ const getLastPostId = async () =>
         });
     })
 }
+
+const getCategoryOfPost = (id) =>
+{
+    return new Promise((resolve, reject) => 
+    {
+        db.query(
+        `
+            SELECT category.title
+            FROM category
+            WHERE EXISTS
+            (
+                SELECT post_category.postId
+                FROM post_category
+                WHERE post_category.postId = ${id} AND category.id = post_category.categoryId
+            )
+        `
+        , (err, data) => {
+            if (err)
+            {
+                reject(err)
+            }
+            resolve(data)
+        });
+    })
+}
+
+const countNumberComments = (postId) => 
+{
+    return new Promise((resolve, reject) => 
+    {
+        db.query('SELECT * FROM post_comment WHERE postId = ?', [postId], (err, data) => {
+            if (err)
+            {
+                reject(err)
+            }
+            resolve(data.length)
+        });
+    })
+}
+
 router.get('/write', async (req,res) => {
     const tokenKey = req.session.tokenKey;
     if (tokenKey)
@@ -269,23 +309,29 @@ router.get('/view/:titleURL', async (req, res) =>
         
         const user = await getUserData(result[0].authorId);
         const commentSection = await buildCommentSection(result[0].id, titleURL);
-        
+        var categoryList = [];
+        const allCategories = await getCategoryOfPost(result[0].id);
+        for (var i = 0; i < allCategories.length; i++) 
+            categoryList.push(allCategories[i].title)
+        const numComments = await countNumberComments(result[0].id);
         return res.render('../views/ejs/blog.ejs', {
             nav_bar: nav_bar,
             userName: userName,
             title: result[0].title,
+            category: categoryList.join(', '),
             summary: result[0].summary,
             content: DOMPurify.sanitize(marked.parse(result[0].content)),
             authorId: result[0].authorId,
             authorEmail: user.email,
             createdAt: result[0].createdAt.toISOString().replace('T', ' ').substr(0, 19),
+            numComments: numComments,
             commentSection: commentSection,
             postUrl: titleURL
         })
     })
 })
 
-router.post('/:postUrl/comment', async (req, res) => 
+router.post('/view/:postUrl/comment', async (req, res) => 
 {
     const {commentContent} = req.body;
     const {postUrl} = req.params;
@@ -303,13 +349,13 @@ router.post('/:postUrl/comment', async (req, res) =>
             {
                 console.log(error);
             }
-            return res.redirect(`/blog/${postUrl}`);
+            return res.redirect(`/blog/view/${postUrl}`);
         })
     } else 
         res.redirect('/login');
 })
 
-router.post('/:postUrl/comment/:parentId', async (req, res) => 
+router.post('/view/:postUrl/comment/:parentId', async (req, res) => 
 {
     const {commentContent} = req.body;
     const {postUrl, parentId} = req.params;
@@ -327,7 +373,7 @@ router.post('/:postUrl/comment/:parentId', async (req, res) =>
             {
                 console.log(error);
             }
-            return res.redirect(`/blog/${postUrl}`);
+            return res.redirect(`/blog/view/${postUrl}`);
         })
     } else 
         res.redirect('/login');
@@ -371,7 +417,7 @@ router.post('/update/:postUrl', async (req, res) =>
         db.query(`UPDATE post SET ? WHERE titleURL = '${postUrl}'`, {summary:summary, content:content}, (err,result) => {
             if(err) console.log(err);
         });
-        res.redirect(`/blog/${postUrl}`);
+        res.redirect(`/blog/view/${postUrl}`);
     } else 
         res.redirect('/login');
 })
