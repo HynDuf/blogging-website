@@ -1,13 +1,24 @@
-# quanlyblog
-Website quản lý blog, đọc, viết blog
-![image](https://user-images.githubusercontent.com/100453461/160240323-320a4bda-1e7a-4d2c-bde0-0e394ca77451.png)
+# Blogging Website
 
-Các chức năng chính:
-+ Admin : Post các bài viết lên để mọi người cùng đọc.
-          Đọc các bài viết của những người khác.
-          Xóa mọi bài viết.
-          Quản lý các tài khoản bằng việc khóa tài khoản và mở khóa tài khoản.
-          
-+ User : Post các bài viết lên để mọi người cùng đọc.
-         Đọc các bài viết của những người khác.
-         Xóa các bài viết của mình. 
+Website quản lý, đọc và viết blog cho môn học Cơ sở dữ liệu (2122II_INT2211_4).
+
+Thành viên nhóm:
+- Huỳnh Tiến Dũng - 21020007
+- Phạm An Đức Vinh - 21020097
+- Vũ Quốc Tuấn - 21020033
+
+## Mục lục
+
+- [Blogging website](#blogging-website)
+
+    - [Mục lục](#mục-lục)
+    - [Tính năng](#tính-năng)
+    - [Cơ sở dữ liệu](#cơ-sở-dữ-liệu)
+
+## Tính năng
+
+## Cơ sở dữ liệu
+
+![Blogging-website-database](https://user-images.githubusercontent.com/29995756/168264404-5dfef95c-6a05-4760-bd0f-e6e44dc1d28d.png)
+
+

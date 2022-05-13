@@ -59,7 +59,10 @@ a {
 a:hover {
     text-decoration: underline; 
 }
-
+.btn-danger:hover
+{
+    text-decoration: underline; 
+}
 .column {
     float: left;
 }

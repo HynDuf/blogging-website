@@ -5,9 +5,9 @@ const hashing = require('../database/hashing');
 const dateTime = require('node-datetime');
 const jwt = require('jsonwebtoken');
 
-router.post('/register',(req,res) =>{
+router.post('/register', (req,res) => {
     const {userName, email, password, passwordcomfirm} = req.body;
-    db.query('SELECT email FROM user WHERE email = ?',[email],async (error,result)=>{
+    db.query('SELECT email FROM user WHERE email = ?', [email], async (error,result) => {
         if(error) console.log(error);
         if(result.length > 0) 
             return res.render('../views/hbs/register.hbs',{message:'Email đã được sử dụng'});
@@ -23,7 +23,7 @@ router.post('/register',(req,res) =>{
 });
 
 router.post('/login', (req,res) => {
-    const {email,password} = req.body;
+    const {email, password} = req.body;
     db.query('SELECT * FROM user WHERE email = ?', [email], async (error,result)=>
     {
         if(error) console.log(error);
@@ -47,7 +47,6 @@ router.post('/login', (req,res) => {
         req.session.tokenKey = tokenKey;
         return res.redirect('/myHomePage');
     });
-    console.log('done!');
 })
 
 module.exports = router;
